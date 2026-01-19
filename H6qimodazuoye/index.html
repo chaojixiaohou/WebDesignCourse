@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学习章节选择 - CodeStruct</title>
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #f5a623;
+            --background-color: #f4f7f9;
+            --text-color: #333;
+            --light-gray: #e0e0e0;
+            --dark-gray: #555;
+            --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            font-family: var(--font-family);
+            margin: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .main-container {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .logo {
+            font-size: 3em;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            color: var(--dark-gray);
+            font-weight: 300;
+            margin-bottom: 50px;
+        }
+
+        .navigation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+        }
+
+        .nav-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            padding: 30px;
+            text-decoration: none;
+            color: var(--text-color);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-bottom: 4px solid var(--primary-color);
+        }
+
+        .nav-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        .nav-card h2 {
+            font-size: 1.8em;
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+
+        .nav-card p {
+            font-size: 1em;
+            line-height: 1.6;
+            color: var(--dark-gray);
+        }
+
+        /* 为不同的卡片设置不同的边框颜色，增加视觉区分度 */
+        .nav-card.card-pointers { border-color: #f5a623; }
+        .nav-card.card-pointers h2 { color: #f5a623; }
+
+        .nav-card.card-structs { border-color: #7ed321; }
+        .nav-card.card-structs h2 { color: #7ed321; }
+
+        .nav-card.card-linked-list { border-color: #d0021b; }
+        .nav-card.card-linked-list h2 { color: #d0021b; }
+
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+        <div class="logo">CodeStruct</div>
+        <h1>选择你的学习起点</h1>
+
+        <div class="navigation-grid">
+            <a href="learning.html#arrays" class="nav-card">
+                <h2>数组 Array</h2>
+                <p>学习如何使用索引来存储和访问有序的、固定大小的数据集合。这是数据结构的基石。</p>
+            </a>
+            <a href="learning.html#pointers" class="nav-card card-pointers">
+                <h2>指针 Pointer</h2>
+                <p>揭开内存地址的神秘面纱，掌握通过指针间接访问和操作数据的强大能力。</p>
+            </a>
+            <a href="learning.html#structs" class="nav-card card-structs">
+                <h2>结构体 Struct</h2>
+                <p>学习如何将不同类型的数据打包成一个自定义的、有意义的整体，构建复杂的数据类型。</p>
+            </a>
+            <a href="learning.html#linked-list" class="nav-card card-linked-list">
+                <h2>链表 Linked List</h2>
+                <p>探索动态数据结构的威力，学习如何通过节点和指针创建灵活、可变的序列。</p>
+            </a>
+        </div>
+    </div>
+
+</body>
+</html>

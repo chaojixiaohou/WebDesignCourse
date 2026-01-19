@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>交互式数据结构学习平台</title>
+    <style>
+        /* --- 全局样式 --- */
+        :root {
+            --primary-color: #256ab862;
+            --secondary-color: #f3b34ca7;
+            --background-color: #f4f7f9;
+            --text-color: #333;
+            --light-gray: #e0e0e0;
+            --dark-gray: #555;
+            --success-color: #9ddd589c;
+            --error-color: #d0021b;
+            --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            font-family: var(--font-family);
+            margin: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* --- 头部和导航 --- */
+        header {
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--dark-gray);
+            margin: 0 15px;
+            font-size: 1.1em;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        nav a:hover, nav a.active {
+            color: var(--primary-color);
+        }
+
+        /* --- 模块通用样式 --- */
+        .module {
+            background-color: white;
+            margin-bottom: 30px;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+            display: none; /* 默认隐藏 */
+        }
+
+        .module.active {
+            display: block; /* 当前模块显示 */
+        }
+
+        .module h2 {
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        
+        .interactive-area {
+            display: flex;
+            gap: 30px;
+            margin-top: 20px;
+            align-items: flex-start;
+        }
+
+        .controls, .challenge {
+            flex: 1;
+            padding: 20px;
+            background-color: #fafafa;
+            border: 1px solid var(--light-gray);
+            border-radius: 5px;
+        }
+
+        .visualization {
+            flex: 2;
+            min-height: 200px;
+            padding: 20px;
+            border: 1px dashed var(--primary-color);
+            border-radius: 5px;
+            background-color: #fff;
+            position: relative;
+        }
+        
+        h3 {
+            margin-top: 0;
+            color: var(--dark-gray);
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #357abd;
+        }
+        
+        input[type="text"], input[type="number"] {
+            padding: 8px;
+            border: 1px solid var(--light-gray);
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+
+        /* --- 数组模块 spécifiques --- */
+        #array-visualization {
+            display: flex;
+            gap: 5px;
+            align-items: flex-end;
+            height: 150px;
+        }
+        .array-element {
+            display: flex;
+            flex-direction: column-reverse;
+            align-items: center;
+        }
+        .array-bar {
+            width: 40px;
+            background-color: var(--secondary-color);
+            text-align: center;
+            color: white;
+            font-weight: bold;
+            border-radius: 4px 4px 0 0;
+            transition: height 0.3s ease-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .array-index {
+            font-size: 0.9em;
+            color: var(--dark-gray);
+            margin-top: 5px;
+        }
+
+        /* --- 指针模块 spécifiques --- */
+        #pointer-visualization {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 20px;
+        }
+        .memory-cell {
+            border: 1px solid var(--light-gray);
+            padding: 10px;
+            border-radius: 4px;
+            background: #fff;
+            position: relative;
+        }
+        .memory-cell.is-pointer {
+             background: #e7f3ff;
+        }
+        .memory-cell .address {
+            font-family: monospace;
+            font-size: 0.8em;
+            color: #999;
+        }
+        .memory-cell .value {
+            font-size: 1.5em;
+            font-weight: bold;
+            text-align: center;
+            padding: 10px 0;
+        }
+        .memory-cell .name {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        #pointer-arrow {
+            position: absolute;
+            stroke: var(--error-color);
+            stroke-width: 2;
+            fill: none;
+            marker-end: url(#arrow-head);
+        }
+
+        /* --- 结构体模块 spécifiques --- */
+        #struct-builder-preview {
+            border: 1px solid var(--dark-gray);
+            padding: 15px;
+            border-radius: 5px;
+            background: #f9f9f9;
+        }
+        #struct-builder-preview code {
+            white-space: pre;
+            display: block;
+        }
+
+        /* --- 链表模块 spécifiques --- */
+        #linked-list-visualization {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            overflow-x: auto;
+            padding-bottom: 20px;
+        }
+        .list-node {
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+        .node-box {
+            width: 50px;
+            height: 50px;
+            border: 2px solid var(--primary-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            background-color: white;
+        }
+        .node-data {
+            border-right: 1px solid var(--light-gray);
+        }
+        .node-next {
+            background-color: #f0f0f0;
+        }
+        .node-arrow {
+            width: 20px;
+            height: 2px;
+            background-color: var(--dark-gray);
+            position: relative;
+        }
+        .node-arrow::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: -3px;
+            border-left: 6px solid var(--dark-gray);
+            border-top: 4px solid transparent;
+            border-bottom: 4px solid transparent;
+        }
+       
+
+        /* --- 新增内容的CSS样式 --- */
+.knowledge-section {
+    margin-top: 40px;
+    border-top: 1px solid var(--light-gray);
+    padding-top: 20px;
+}
+
+.code-block {
+    background-color: #2d2d2d;
+    color: #f8f8f2;
+    padding: 15px;
+    border-radius: 5px;
+    overflow-x: auto;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.95em;
+}
+
+.quiz-form {
+    margin-top: 15px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border: 1px solid var(--light-gray);
+    border-radius: 5px;
+}
+
+.quiz-question {
+    margin-bottom: 15px;
+}
+
+.quiz-question p {
+    margin: 0 0 10px 0;
+    font-weight: bold;
+}
+
+.quiz-question label {
+    display: block;
+    margin-bottom: 5px;
+    cursor: pointer;
+}
+
+.quiz-result {
+    margin-top: 10px;
+    font-weight: bold;
+    padding: 10px;
+    border-radius: 4px;
+    display: none; /* 默认隐藏 */
+}
+
+.quiz-result.correct {
+    color: #3c763d;
+    background-color: #dff0d8;
+    display: block;
+}
+
+.quiz-result.incorrect {
+    color: #a94442;
+    background-color: #f2dede;
+    display: block;
+}
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">CodeStruct</div>
+        <nav>
+            <a href="#arrays" class="nav-link active">数组</a>
+            <a href="#pointers" class="nav-link">指针</a>
+            <a href="#structs" class="nav-link">结构体</a>
+            <a href="#linked-list" class="nav-link">链表</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <!-- ****************** 数组模块 ****************** -->
+        <section id="arrays" class="module active">
+            <h2>1. 数组 (Array)</h2>
+            <p>数组是存储相同类型元素的固定大小的连续集合。通过索引（从0开始）来访问每个元素。</p>
+
+            <!-- ========== 数组 - 新增内容开始 ========== -->
+<div class="knowledge-section">
+    <h3>基础知识</h3>
+    <p>
+        <strong>声明：</strong> 在C++中，声明一个数组需要指定元素的类型和数组的大小，例如 <code>int scores[10];</code> 就创建了一个可以容纳10个整数的数组。<br>
+        <strong>初始化：</strong> 你可以在声明时初始化数组，例如 <code>int numbers[5] = {10, 20, 30, 40, 50};</code>。<br>
+        <strong>访问元素：</strong> 数组的元素通过索引访问，索引从 <strong>0</strong> 开始。第一个元素的索引是0，最后一个是 <code>大小-1</code>。例如，<code>scores[0]</code> 访问的是第一个分数。
+    </p>
+
+    <h3>示例代码</h3>
+    <pre class="code-block"><code>// 声明并初始化一个包含5个整数的数组
+int numbers[5] = {10, 20, 30, 40, 50};
+
+// 使用for循环遍历并打印数组中的每个元素
+#include <iostream>
+int main() {
+    for (int i = 0; i < 5; ++i) {
+        std::cout << "Element at index " << i << " is: " << numbers[i] << std::endl;
+    }
+    return 0;
+}
+</code></pre>
+
+    <h3>测试题目</h3>
+    <form class="quiz-form" id="array-quiz">
+        <div class="quiz-question">
+            <p>对于一个声明为 <code>int arr[10];</code> 的数组，第一个元素的索引是什么？</p>
+            <label><input type="radio" name="q1" value="1"> 1</label>
+            <label><input type="radio" name="q1" value="0"> 0</label>
+            <label><input type="radio" name="q1" value="10"> 10</label>
+        </div>
+        <button type="submit">提交答案</button>
+        <p class="quiz-result" id="array-quiz-result"></p>
+    </form>
+</div>
+<!-- ========== 数组 - 新增内容结束 ========== -->
+            <div class="interactive-area">
+                <div class="controls">
+                    <h3>可视化沙盒</h3>
+                    <input type="number" id="array-input" placeholder="输入一个数字 (0-100)">
+                    <button id="add-to-array">添加到数组</button>
+                    <button id="remove-from-array">移除末尾元素</button>
+                </div>
+                <div class="visualization" id="array-visualization-container">
+                    <div id="array-visualization"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ****************** 指针模块 ****************** -->
+        <section id="pointers" class="module">
+            <h2>2. 指针 (Pointer)</h2>
+            <p>指针是一个变量，其值为另一个变量的内存地址。它允许我们间接访问和修改内存中的数据。</p>
+            <!-- ========== 指针 - 新增内容开始 ========== -->
+<div class="knowledge-section">
+    <h3>基础知识</h3>
+    <p>
+        <strong>取地址 (&)：</strong> <code>&</code> 运算符用于获取一个变量的内存地址。例如，<code>&num</code> 会返回变量 <code>num</code> 的地址。<br>
+        <strong>解引用 (*)：</strong> <code>*</code> 运算符用于访问指针所指向地址中存储的值。例如，如果 <code>ptr</code> 指向 <code>num</code>，那么 <code>*ptr</code> 的值就等于 <code>num</code> 的值。
+    </p>
+
+    <h3>示例代码</h3>
+    <pre class="code-block"><code>#include <iostream>
+int main() {
+    int num = 42;      // 一个普通的整型变量
+    int *ptr;          // 声明一个指向整型的指针
+
+    ptr = &num;        // 将num的内存地址赋给指针ptr
+
+    std::cout << "Value of num: " << num << std::endl;
+    std::cout << "Address of num: " << &num << std::endl;
+    std::cout << "Value of ptr: " << ptr << std::endl;
+    std::cout << "Value pointed to by ptr (*ptr): " << *ptr << std::endl;
+
+    *ptr = 100; // 通过指针修改num的值
+    std::cout << "New value of num: " << num << std::endl;
+    
+    return 0;
+}
+</code></pre>
+
+    <h3>测试题目</h3>
+    <form class="quiz-form" id="pointer-quiz">
+        <div class="quiz-question">
+            <p>一个指针变量本身存储的是什么？</p>
+            <label><input type="radio" name="q1" value="value"> 一个具体的值（如整数、字符）</label>
+            <label><input type="radio" name="q1" value="address"> 另一个变量的内存地址</label>
+            <label><input type="radio" name="q1" value="type"> 另一个变量的类型</label>
+        </div>
+        <button type="submit">提交答案</button>
+        <p class="quiz-result" id="pointer-quiz-result"></p>
+    </form>
+</div>
+<!-- ========== 指针 - 新增内容结束 ========== -->
+            <div class="interactive-area">
+                 <div class="controls">
+                    <h3>可视化沙盒</h3>
+                    <p>观察指针 <code>ptr</code> 如何指向变量 <code>num</code>。</p>
+                    <label for="num-value-slider">修改 <code>num</code> 的值: </label>
+                    <input type="range" id="num-value-slider" min="0" max="100" value="42">
+                    <p>通过指针解引用 (<code>*ptr</code>) 修改的值将直接影响 <code>num</code>。</p>
+                </div>
+                <div class="visualization">
+                    <svg id="pointer-svg" width="100%" height="100%" style="position:absolute; top:0; left:0; pointer-events: none;">
+                        <defs>
+                            <marker id="arrow-head" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                <path d="M 0 0 L 10 5 L 0 10 z" fill="#d0021b" />
+                            </marker>
+                        </defs>
+                        <path id="pointer-arrow" d="M0 0 L 0 0"></path>
+                    </svg>
+                    <div id="pointer-visualization">
+                        <div class="memory-cell" id="mem-num">
+                            <div class="address">0x7ffc...a1b4</div>
+                            <div class="name">num (int)</div>
+                            <div class="value">42</div>
+                        </div>
+                        <div class="memory-cell is-pointer" id="mem-ptr">
+                            <div class="address">0x7ffc...a1b8</div>
+                            <div class="name">ptr (int*)</div>
+                            <div class="value">0x7ffc...a1b4</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ****************** 结构体模块 ****************** -->
+        <section id="structs" class="module">
+            <h2>3. 结构体 (Struct)</h2>
+            <p>结构体允许我们将不同数据类型的变量组合成一个单一的、有意义的单元。</p>
+            <!-- ========== 结构体 - 新增内容开始 ========== -->
+<div class="knowledge-section">
+    <h3>基础知识</h3>
+    <p>
+        <strong>定义：</strong> 使用 <code>struct</code> 关键字定义一个新的数据类型。它像一个蓝图，描述了该类型包含哪些成员变量。<br>
+        <strong>实例化：</strong> 定义了结构体之后，你可以像创建普通变量一样创建它的实例。例如 <code>Student s1;</code>。<br>
+        <strong>访问成员：</strong> 使用点运算符 <code>.</code> 来访问结构体实例的成员。例如，<code>s1.name = "Alice";</code>。
+    </p>
+
+    <h3>示例代码</h3>
+    <pre class="code-block"><code>#include <iostream>
+#include <string>
+
+// 1. 定义一个Student结构体
+struct Student {
+    std::string name;
+    int studentID;
+    double gpa;
+};
+
+int main() {
+    // 2. 创建一个Student类型的实例
+    Student s1;
+
+    // 3. 使用点运算符(.)访问并赋值给成员
+    s1.name = "Alice";
+    s1.studentID = 12345;
+    s1.gpa = 3.8;
+
+    std::cout << "Student Name: " << s1.name << std::endl;
+    std::cout << "ID: " << s1.studentID << ", GPA: " << s1.gpa << std::endl;
+    
+    return 0;
+}
+</code></pre>
+
+    <h3>测试题目</h3>
+    <form class="quiz-form" id="struct-quiz">
+        <div class="quiz-question">
+            <p>在C++中，我们使用哪个运算符来访问一个结构体变量的成员？</p>
+            <label><input type="radio" name="q1" value="arrow"> -> (箭头运算符)</label>
+            <label><input type="radio" name="q1" value="dot"> . (点运算符)</label>
+            <label><input type="radio" name="q1" value="colon"> : (冒号)</label>
+        </div>
+        <button type="submit">提交答案</button>
+        <p class="quiz-result" id="struct-quiz-result"></p>
+    </form>
+</div>
+<!-- ========== 结构体 - 新增内容结束 ========== -->
+            <div class="interactive-area">
+                <div class="controls">
+                    <h3>"造物"工坊</h3>
+                    <p>为你自己的结构体添加成员：</p>
+                    <input type="text" id="struct-member-type" placeholder="如: int, string">
+                    <input type="text" id="struct-member-name" placeholder="如: age, name">
+                    <button id="add-struct-member">添加成员</button>
+                    <button id="reset-struct">重置</button>
+                </div>
+                <div class="visualization">
+                    <h3>结构体 "蓝图" 预览</h3>
+                    <div id="struct-builder-preview">
+                        <code>struct MyObject {
+    // 在左侧添加成员
+};</code>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ****************** 链表模块 ****************** -->
+        <section id="linked-list" class="module">
+            <h2>4. 链表 (Linked List)</h2>
+            <p>链表是一种动态数据结构，由一系列节点组成。每个节点包含数据和一个指向下一个节点的指针。</p>
+            <!-- ========== 链表 - 新增内容开始 ========== -->
+<div class="knowledge-section">
+    <h3>基础知识</h3>
+    <p>
+        <strong>节点 (Node)：</strong> 链表的基本组成单元。每个节点通常包含两部分：存储数据的<strong>数据域</strong>，和存储下一个节点地址的<strong>指针域</strong>。<br>
+        <strong>动态性：</strong> 与数组不同，链表的大小可以在运行时动态增长或缩小，因为它不需要连续的内存空间。<br>
+        <strong>头指针 (Head)：</strong> 一个指向链表第一个节点的指针。通过头指针，我们可以遍历整个链表。链表的末尾节点的指针通常指向 <code>NULL</code>。
+    </p>
+
+    <h3>示例代码</h3>
+    <pre class="code-block"><code>#include <iostream>
+
+// 定义链表节点结构体
+struct Node {
+    int data;       // 数据域
+    Node* next;     // 指针域，指向下一个Node
+};
+
+int main() {
+    // 手动创建并链接三个节点
+    Node* head = new Node();
+    Node* second = new Node();
+    Node* third = new Node();
+
+    head->data = 10;
+    head->next = second; // 链接第一个和第二个节点
+
+    second->data = 20;
+    second->next = third; // 链接第二个和第三个节点
+
+    third->data = 30;
+    third->next = NULL;  // 第三个节点是末尾，指向NULL
+
+    // 遍历链表
+    Node* current = head;
+    while (current != NULL) {
+        std::cout << current->data << " -> ";
+        current = current->next;
+    }
+    std::cout << "NULL" << std::endl;
+
+    return 0;
+}
+</code></pre>
+
+    <h3>测试题目</h3>
+    <form class="quiz-form" id="list-quiz">
+        <div class="quiz-question">
+            <p>一个典型的链表节点（Node）包含哪两个主要部分？</p>
+            <label><input type="radio" name="q1" value="data_pointer"> 数据（Data）和指向下一个节点的指针（Pointer）</label>
+            <label><input type="radio" name="q1" value="index_value"> 索引（Index）和值（Value）</label>
+            <label><input type="radio" name="q1" value="key_value"> 键（Key）和值（Value）</label>
+        </div>
+        <button type="submit">提交答案</button>
+        <p class="quiz-result" id="list-quiz-result"></p>
+    </form>
+</div>
+<!-- ========== 链表 - 新增内容结束 ========== -->
+             <div class="interactive-area">
+                <div class="controls">
+                    <h3>可视化沙盒</h3>
+                    <input type="text" id="node-value-input" placeholder="节点值">
+                    <button id="add-node-head">在头部添加</button>
+                    <button id="add-node-tail">在尾部添加</button>
+                    <button id="remove-node-head">移除头部</button>
+                </div>
+                <div class="visualization">
+                    <div id="linked-list-visualization">
+                        <div class="list-node">
+                            <div class="node-box node-data" style="border-color: #999;">HEAD</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        // --- 导航逻辑 ---
+        const navLinks = document.querySelectorAll('.nav-link');
+        const modules = document.querySelectorAll('.module');
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = link.getAttribute('href').substring(1);
+
+                modules.forEach(module => {
+                    module.classList.remove('active');
+                    if (module.id === targetId) {
+                        module.classList.add('active');
+                    }
+                });
+
+                navLinks.forEach(nav => nav.classList.remove('active'));
+                link.classList.add('active');
+            });
+        });
+
+        function activateModuleFromHash() {
+            const hash = window.location.hash;
+            if (hash) {
+                const targetLink = document.querySelector(`.nav-link[href="${hash}"]`);
+                if (targetLink) {
+                    targetLink.click(); // 模拟点击，触发切换逻辑
+                }
+            }
+        }
+        activateModuleFromHash();
+
+
+        // --- 模块 1: 数组 ---
+        const arrayVis = document.getElementById('array-visualization');
+        const arrayInput = document.getElementById('array-input');
+        const addToArrayBtn = document.getElementById('add-to-array');
+        const removeFromArrayBtn = document.getElementById('remove-from-array');
+        let arrayData = [25, 60, 45, 75];
+
+        function renderArray() {
+            arrayVis.innerHTML = '';
+            arrayData.forEach((val, index) => {
+                const elementDiv = document.createElement('div');
+                elementDiv.className = 'array-element';
+
+                const bar = document.createElement('div');
+                bar.className = 'array-bar';
+                bar.style.height = `${val}%`;
+                bar.textContent = val;
+
+                const idxLabel = document.createElement('div');
+                idxLabel.className = 'array-index';
+                idxLabel.textContent = `[${index}]`;
+
+                elementDiv.appendChild(bar);
+                elementDiv.appendChild(idxLabel);
+                arrayVis.appendChild(elementDiv);
+            });
+        }
+
+        addToArrayBtn.addEventListener('click', () => {
+            const val = parseInt(arrayInput.value);
+            if (!isNaN(val) && val >= 0 && val <= 100 && arrayData.length < 10) {
+                arrayData.push(val);
+                renderArray();
+                arrayInput.value = '';
+            }
+        });
+
+        removeFromArrayBtn.addEventListener('click', () => {
+            if (arrayData.length > 0) {
+                arrayData.pop();
+                renderArray();
+            }
+        });
+        
+        renderArray();
+
+        // --- 模块 2: 指针 ---
+        const numValueSlider = document.getElementById('num-value-slider');
+        const numValueCell = document.querySelector('#mem-num .value');
+        
+        numValueSlider.addEventListener('input', (e) => {
+            numValueCell.textContent = e.target.value;
+        });
+
+        function drawPointerArrow() {
+            const memNum = document.getElementById('mem-num');
+            const memPtr = document.getElementById('mem-ptr');
+            const svg = document.getElementById('pointer-svg');
+            const path = document.getElementById('pointer-arrow');
+
+            const rect1 = memPtr.getBoundingClientRect();
+            const rect2 = memNum.getBoundingClientRect();
+            const svgRect = svg.getBoundingClientRect();
+
+            const startX = rect1.left - svgRect.left + rect1.width / 2;
+            const startY = rect1.top - svgRect.top + rect1.height / 2;
+            const endX = rect2.left - svgRect.left + rect2.width / 2;
+            const endY = rect2.top - svgRect.top + rect2.height / 2;
+
+            path.setAttribute('d', `M ${startX} ${startY} L ${endX} ${endY}`);
+        }
+        drawPointerArrow();
+        window.addEventListener('resize', drawPointerArrow);
+
+
+        // --- 模块 3: 结构体 ---
+        const memberTypeInput = document.getElementById('struct-member-type');
+        const memberNameInput = document.getElementById('struct-member-name');
+        const addMemberBtn = document.getElementById('add-struct-member');
+        const resetStructBtn = document.getElementById('reset-struct');
+        const previewCode = document.querySelector('#struct-builder-preview code');
+        let structMembers = [];
+
+        function renderStruct() {
+            let membersCode = '';
+            if (structMembers.length === 0) {
+                membersCode = '    // 在左侧添加成员';
+            } else {
+                membersCode = structMembers.map(m => `    ${m.type} ${m.name};`).join('\n');
+            }
+            previewCode.textContent = `struct MyObject {\n${membersCode}\n};`;
+        }
+
+        addMemberBtn.addEventListener('click', () => {
+            const type = memberTypeInput.value.trim();
+            const name = memberNameInput.value.trim();
+            if (type && name) {
+                structMembers.push({ type, name });
+                renderStruct();
+                memberTypeInput.value = '';
+                memberNameInput.value = '';
+            }
+        });
+
+        resetStructBtn.addEventListener('click', () => {
+            structMembers = [];
+            renderStruct();
+        });
+
+        // --- 模块 4: 链表 ---
+        const listVis = document.getElementById('linked-list-visualization');
+        const nodeValueInput = document.getElementById('node-value-input');
+        const addHeadBtn = document.getElementById('add-node-head');
+        const addTailBtn = document.getElementById('add-node-tail');
+        const removeHeadBtn = document.getElementById('remove-node-head');
+        let linkedListData = [];
+
+        function renderLinkedList() {
+            listVis.innerHTML = `<div class="list-node"><div class="node-box node-data" style="border-color: #999;">HEAD</div></div>`;
+            if(linkedListData.length > 0) {
+                const arrow = document.createElement('div');
+                arrow.className = 'node-arrow';
+                listVis.appendChild(arrow);
+            }
+
+            linkedListData.forEach((val, index) => {
+                const nodeContainer = document.createElement('div');
+                nodeContainer.className = 'list-node';
+                
+                const nodeBox = document.createElement('div');
+                nodeBox.className = 'node-box node-data';
+                nodeBox.textContent = val;
+                
+                nodeContainer.appendChild(nodeBox);
+
+                // Add pointer visualization (box + arrow)
+                const pointerBox = document.createElement('div');
+                pointerBox.className = 'node-box node-next';
+                nodeContainer.appendChild(pointerBox);
+                
+                listVis.appendChild(nodeContainer);
+
+                if (index < linkedListData.length - 1) {
+                    const arrow = document.createElement('div');
+                    arrow.className = 'node-arrow';
+                    listVis.appendChild(arrow);
+                } else {
+                     const nullArrow = document.createElement('div');
+                     nullArrow.textContent = ' -> NULL';
+                     nullArrow.style.marginLeft = '10px';
+                     nullArrow.style.fontWeight = 'bold';
+                     listVis.appendChild(nullArrow);
+                }
+            });
+        }
+        
+        addHeadBtn.addEventListener('click', () => {
+            const val = nodeValueInput.value.trim();
+            if (val) {
+                linkedListData.unshift(val);
+                renderLinkedList();
+                nodeValueInput.value = '';
+            }
+        });
+
+        addTailBtn.addEventListener('click', () => {
+            const val = nodeValueInput.value.trim();
+            if (val) {
+                linkedListData.push(val);
+                renderLinkedList();
+                nodeValueInput.value = '';
+            }
+        });
+
+        removeHeadBtn.addEventListener('click', () => {
+            if (linkedListData.length > 0) {
+                linkedListData.shift();
+                renderLinkedList();
+            }
+        });
+        
+        renderLinkedList();
+    });
+    // --- 新增的测试题提交逻辑 ---
+
+function handleQuizSubmit(formId, resultId, correctAnswers) {
+    const form = document.getElementById(formId);
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const resultEl = document.getElementById(resultId);
+        const formData = new FormData(form);
+        let allCorrect = true;
+
+        for (const [key, value] of Object.entries(correctAnswers)) {
+            if (formData.get(key) !== value) {
+                allCorrect = false;
+                break;
+            }
+        }
+
+        resultEl.classList.remove('correct', 'incorrect');
+        if (allCorrect) {
+            resultEl.textContent = '回答正确！';
+            resultEl.classList.add('correct');
+        } else {
+            resultEl.textContent = '回答错误，请再试一次。';
+            resultEl.classList.add('incorrect');
+        }
+    });
+}
+
+// 初始化所有测试题
+handleQuizSubmit('array-quiz', 'array-quiz-result', { q1: '0' });
+handleQuizSubmit('pointer-quiz', 'pointer-quiz-result', { q1: 'address' });
+handleQuizSubmit('struct-quiz', 'struct-quiz-result', { q1: 'dot' });
+handleQuizSubmit('list-quiz', 'list-quiz-result', { q1: 'data_pointer' });
+    </script>
+</body>
+</html>

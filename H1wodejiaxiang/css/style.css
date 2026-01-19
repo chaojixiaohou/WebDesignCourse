@@ -1,0 +1,261 @@
+/* 基础样式 - 标记选择器 */
+body {
+    font-family: 'Microsoft YaHei', Arial, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+h1, h2, h3 {
+    color: #2c5530;
+    margin-bottom: 0.5em;
+}
+
+p {
+    margin-bottom: 1.2em;
+    text-align: justify;
+}
+
+a {
+    color: #2c5530;
+    text-decoration: none;
+}
+
+/* 类选择器 */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.header {
+    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), 
+                url('../media/header-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    color: white;
+    text-align: center;
+    padding: 100px 0;
+    margin-bottom: 30px;
+}
+
+.section-title {
+    font-size: 2.2em;
+    text-align: center;
+    margin: 40px 0 30px;
+    position: relative;
+}
+
+.section-title:after {
+    content: '';
+    display: block;
+    width: 100px;
+    height: 3px;
+    background: #8b0000;
+    margin: 10px auto;
+}
+
+.content-section {
+    background: white;
+    padding: 30px;
+    margin-bottom: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.image-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.gallery-item {
+    flex: 1 1 300px;
+    max-width: 100%;
+}
+
+.gallery-item img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 5px;
+    transition: transform 0.3s;
+}
+
+.gallery-item img:hover {
+    transform: scale(1.03);
+}
+
+.nav-menu {
+    display: flex;
+    justify-content: center;
+    background: #2c5530;
+    padding: 15px 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.nav-menu a {
+    color: white;
+    padding: 10px 20px;
+    margin: 0 10px;
+    border-radius: 4px;
+    transition: background 0.3s;
+}
+
+.nav-menu a:hover {
+    background: #8b0000;
+}
+
+/* ID选择器 */
+#top {
+    position: absolute;
+    top: 0;
+}
+
+#history {
+    background: #f5f5f5;
+}
+
+#culture {
+    background: linear-gradient(to right, #f5f5f5, #e8f5e8);
+}
+
+/* 复合选择器 */
+.nav-menu a.external {
+    background: #8b0000;
+    font-weight: bold;
+}
+
+.content-section p:first-of-type {
+    font-size: 1.1em;
+    font-weight: 500;
+}
+
+/* 文字样式类 - 至少5个 */
+.intro-text {
+    font-size: 1.15em;
+    line-height: 1.8;
+    color: #2c5530;
+    font-style: italic;
+    text-indent: 2em;
+}
+
+.highlight-text {
+    background-color: #e8f5e8;
+    border-left: 4px solid #2c5530;
+    padding: 15px;
+    margin: 20px 0;
+    font-weight: bold;
+}
+
+.quote-text {
+    font-family: 'KaiTi', '楷体', serif;
+    font-size: 1.1em;
+    color: #666;
+    text-align: center;
+    font-style: italic;
+    margin: 25px 0;
+    padding: 15px;
+    border-top: 1px dashed #8b0000;
+    border-bottom: 1px dashed #8b0000;
+}
+
+.fact-text {
+    background: #8b0000;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-weight: bold;
+    display: inline-block;
+    margin: 10px 0;
+}
+
+.caption-text {
+    font-size: 0.9em;
+    color: #666;
+    text-align: center;
+    font-style: italic;
+    margin-top: 5px;
+}
+
+/* 层叠性演示 */
+.section-title {
+    color: #2c5530;
+}
+
+#culture .section-title {
+    color: #8b0000; /* 这个会覆盖上面的样式 */
+}
+
+.special-title {
+    color: #5a3921 !important; /* 使用important演示层叠性 */
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .nav-menu {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .nav-menu a {
+        margin: 5px 0;
+        width: 80%;
+        text-align: center;
+    }
+    
+    .header {
+        padding: 60px 0;
+    }
+    
+    .section-title {
+        font-size: 1.8em;
+    }
+}
+
+footer {
+    background: #2c5530;
+    color: white;
+    text-align: center;
+    padding: 30px 0;
+    margin-top: 40px;
+}
+
+.back-to-top {
+    display: inline-block;
+    background: #8b0000;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 4px;
+    margin-top: 15px;
+}
+
+.video-container {
+    background: #f0f0f0;
+    padding: 30px;
+    text-align: center;
+    margin: 20px 0;
+    border-radius: 8px;
+}
+
+.placeholder-video {
+    font-style: italic;
+    color: #666;
+}
+
+/* 图片占位符样式 - 在没有实际图片时使用 */
+.gallery-item img[src*=".jpg"] {
+    border: 2px dashed #ccc;
+    background: #f9f9f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #999;
+    font-size: 14px;
+}
